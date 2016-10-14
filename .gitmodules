@@ -1,0 +1,3 @@
+[submodule "src/main/tsp-proto"]
+	path = src/main/tsp-proto
+	url = git@github.com:sircelsius/tsp-proto.git
