@@ -1,23 +1,77 @@
 apply plugin: 'java'
-apply plugin: 'maven'
+apply plugin: 'com.google.protobuf'
+apply plugin: 'checkstyle'
 
 group = 'com.celsius.tsp'
 version = '1.0-SNAPSHOT'
 
 description = """tsp-solver"""
 
-sourceCompatibility = 1.5
-targetCompatibility = 1.5
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
 
 
 
-repositories {
-        
-     maven { url "http://repo.maven.apache.org/maven2" }
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.0'
+  }
 }
+
+repositories {
+  mavenCentral()
+  mavenLocal()
+}
+
+def grpcVersion = '1.0.0'
+
 dependencies {
-    testCompile group: 'junit', name: 'junit', version:'3.8.1'
+  compile "io.grpc:grpc-netty:${grpcVersion}"
+  compile "io.grpc:grpc-protobuf:${grpcVersion}"
+  compile "io.grpc:grpc-stub:${grpcVersion}"
+
+  testCompile group: 'junit', name: 'junit', version:'3.8.1'
+}
+
+protobuf {
+  protoc {
+    artifact = 'com.google.protobuf:protoc:3.0.0'
+  }
+  plugins {
+    grpc {
+      artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
+    }
+  }
+  generateProtoTasks {
+    all()*.plugins {
+      grpc {
+        option 'enable_deprecated=false'
+      }
+    }
+  }
+}
+
+apply plugin: 'idea'
+
+idea {
+  module {
+    sourceDirs += file("${projectDir}/build/generated/source/proto/main/java")
+    sourceDirs += file("${projectDir}/build/generated/source/proto/main/grpc")
+  }
+}
+
+checkstyle {
+  configFile = file("$rootDir/checkstyle.xml")
+  toolVersion = "6.17"
+  ignoreFailures = false
+  if (rootProject.hasProperty("checkstyle.ignoreFailures")) {
+    ignoreFailures = rootProject.properties["checkstyle.ignoreFailures"].toBoolean()
+  }
+  configProperties["rootDir"] = rootDir
 }
