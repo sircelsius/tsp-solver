@@ -1,6 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'com.google.protobuf'
 apply plugin: 'checkstyle'
+apply plugin: 'jacoco'
 
 group = 'com.celsius.tsp'
 version = '1.0-SNAPSHOT'
@@ -36,7 +37,9 @@ dependencies {
   compile "io.grpc:grpc-protobuf:${grpcVersion}"
   compile "io.grpc:grpc-stub:${grpcVersion}"
 
-  testCompile group: 'junit', name: 'junit', version:'3.8.1'
+  compile 'org.projectlombok:lombok:1.12.6'
+
+  testCompile 'junit:junit:4.12'
 }
 
 protobuf {
