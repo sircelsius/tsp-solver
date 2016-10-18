@@ -2,7 +2,7 @@
 
 A Java gRPC server that solves the Travelling Salesman Problem.
 
-*NB* A lot of the gRPC server code and build configurations (gradle) comes from [grpc/grpc-java](github.com/grpc/grpc-java).
+*NB* A lot of the gRPC server code and build configurations (gradle) comes from [grpc/grpc-java](http://www.github.com/grpc/grpc-java).
 
 You can build the server with the following command:
 
