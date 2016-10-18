@@ -20,10 +20,9 @@ public class TravellingSalesmanProblemService
                     StreamObserver<TspService.TravellingSalesmanSolution> responseObserver) {
     try {
       responseObserver.onNext(heuristic.solve(request));
+      responseObserver.onCompleted();
     } catch (Exception e) {
       responseObserver.onError(e);
-    } finally {
-      responseObserver.onCompleted();
     }
   }
 }

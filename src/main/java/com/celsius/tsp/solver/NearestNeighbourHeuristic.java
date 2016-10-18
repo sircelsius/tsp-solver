@@ -57,7 +57,7 @@ public class NearestNeighbourHeuristic implements TravellingSalesmanHeuristic {
       .filter(edge ->
         filterLast(edge, visited, problem.getArrivalVertexId(), problem.getVerticesCount()))
       .filter(edge -> filterVisited(visited, edge))
-      .min((edge, t1) -> edge.getValue())
+      .reduce((edge, edge1) -> edge.getValue() < edge1.getValue() ? edge : edge1)
       .map(edge -> getArrivalVertex(problem.getVerticesList(), edge.getArrivalVerticeId()))
       .orElse(Optional.empty());
   }
