@@ -14,8 +14,6 @@ tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
 
-
-
 buildscript {
   repositories {
     mavenCentral()
@@ -28,6 +26,14 @@ buildscript {
 repositories {
   mavenCentral()
   mavenLocal()
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Quickstart',
+                   'Implementation-Version': version,
+                   'Main-Class': 'com.celsius.tsp.TravellingSalesmanSolverApplication'
+    }
 }
 
 def grpcVersion = '1.0.0'
@@ -77,4 +83,20 @@ checkstyle {
     ignoreFailures = rootProject.properties["checkstyle.ignoreFailures"].toBoolean()
   }
   configProperties["rootDir"] = rootDir
+}
+
+apply plugin: "application"
+
+startScripts.enabled = false
+
+task travellingSalesmanProblem(type: CreateStartScripts) {
+  mainClassName = 'com.celsius.tsp.TravellingSalesmanSolverApplication'
+  applicationName = 'travelling-salesman-server'
+  outputDir = new File(project.buildDir, 'tmp')
+  classpath = jar.outputs.files + project.configurations.runtime
+}
+
+applicationDistribution.into('bin') {
+  from(travellingSalesmanProblem)
+  fileMode = 0755
 }
