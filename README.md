@@ -1,4 +1,4 @@
-# TSP solver
+# TSP solver [![Build Status](https://travis-ci.org/sircelsius/tsp-solver.svg?branch=master)](https://travis-ci.org/sircelsius/tsp-solver) [![codecov](https://codecov.io/gh/sircelsius/tsp-solver/branch/master/graph/badge.svg)](https://codecov.io/gh/sircelsius/tsp-solver)
 
 A Java gRPC server that solves the Travelling Salesman Problem.
 
