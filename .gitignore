@@ -22,4 +22,3 @@ proguard/
 .gradle/
 build/
 bin/
-gradle/
