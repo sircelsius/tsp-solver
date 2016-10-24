@@ -5,3 +5,6 @@ services:
 
 script:
   - docker-compose build && docker-compose run test
+before_install:
+    - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
+    - git submodule update --init --recursive
