@@ -1,7 +1,5 @@
 apply plugin: 'java'
 apply plugin: 'com.google.protobuf'
-apply plugin: 'checkstyle'
-apply plugin: 'jacoco'
 
 group = 'com.celsius.tsp'
 version = '1.0-SNAPSHOT'
@@ -30,7 +28,7 @@ repositories {
 
 jar {
     manifest {
-        attributes 'Implementation-Title': 'Gradle Quickstart',
+        attributes 'Implementation-Title': 'TSP Solver',
                    'Implementation-Version': version,
                    'Main-Class': 'com.celsius.tsp.TravellingSalesmanSolverApplication'
     }
@@ -66,14 +64,16 @@ protobuf {
   }
 }
 
-apply plugin: 'idea'
+apply plugin: 'jacoco'
 
-idea {
-  module {
-    sourceDirs += file("${projectDir}/build/generated/source/proto/main/java")
-    sourceDirs += file("${projectDir}/build/generated/source/proto/main/grpc")
-  }
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.destination "${buildDir}/jacocoHtml"
+    }
 }
+
+apply plugin: 'checkstyle'
 
 checkstyle {
   configFile = file("$rootDir/checkstyle.xml")
@@ -99,4 +99,13 @@ task travellingSalesmanProblem(type: CreateStartScripts) {
 applicationDistribution.into('bin') {
   from(travellingSalesmanProblem)
   fileMode = 0755
+}
+
+apply plugin: 'idea'
+
+idea {
+  module {
+    sourceDirs += file("${projectDir}/build/generated/source/proto/main/java")
+    sourceDirs += file("${projectDir}/build/generated/source/proto/main/grpc")
+  }
 }
