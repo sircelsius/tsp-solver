@@ -40,6 +40,8 @@ dependencies {
   compile "io.grpc:grpc-netty:${grpcVersion}"
   compile "io.grpc:grpc-protobuf:${grpcVersion}"
   compile "io.grpc:grpc-stub:${grpcVersion}"
+  compile 'io.reactivex.rxjava2:rxjava:2.0.0'
+  compile 'io.dropwizard.metrics:metrics-core:3.1.0'
 
   compile 'org.projectlombok:lombok:1.12.6'
 
