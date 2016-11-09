@@ -1,18 +1,23 @@
-package com.celsius.tsp.solver;
+package com.celsius.tsp.solver.rx;
 
 import static org.junit.Assert.assertEquals;
 
 import com.celsius.tsp.proto.TspService;
 
 import com.google.common.collect.Lists;
+import io.reactivex.Single;
+import io.reactivex.observers.TestObserver;
 
 import org.junit.Test;
 
 import java.util.List;
 
 
+/**
+ * Created by marc on 09.11.16.
+ */
+public class RxNearestNeighbourHeuristicTest {
 
-public class NearestNeighbourHeuristicTest {
   @Test
   public void solve() throws Exception {
     List<TspService.Vertex> vertices = Lists.newArrayList();
@@ -55,16 +60,27 @@ public class NearestNeighbourHeuristicTest {
         .addAllEdges(edges)
         .build();
 
-    TravellingSalesmanHeuristic heuristic = new NearestNeighbourHeuristic();
-    TspService.TravellingSalesmanSolution solution = heuristic.solve(problem);
+    ReactiveTravellingSalesmanHeuristic heuristic = new RxNearestNeighbourHeuristic();
+    Single<TspService.TravellingSalesmanSolution> solution = heuristic.solve(problem);
+    TestObserver<TspService.TravellingSalesmanSolution> observer = new TestObserver<>();
+    solution.subscribe(observer);
 
-    for (int l = 0; l < size - 2; l++) {
-      if ( l % 2 == 0 ) {
-        assertEquals( (l / 2 ) + 1, solution.getVertices(l).getId());
-      } else {
-        assertEquals( size - 1 - ( l + 1 ) / 2, solution.getVertices(l).getId());
-      }
-    }
+    observer.assertSubscribed();
+    observer.awaitTerminalEvent();
+    observer.assertValueCount(1);
+    observer.assertNoErrors();
+
+    observer.values()
+        .forEach(travellingSalesmanSolution -> {
+          for (int l = 0; l < size - 2; l++) {
+            if ( l % 2 == 0 ) {
+              assertEquals( (l / 2 ) + 1, travellingSalesmanSolution.getVertices(l).getId());
+            } else {
+              assertEquals( size - 1 - ( l + 1 ) / 2,
+                  travellingSalesmanSolution.getVertices(l).getId());
+            }
+          }
+        });
+    assertEquals(true, true);
   }
-
 }

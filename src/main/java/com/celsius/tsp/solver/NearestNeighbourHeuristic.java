@@ -1,12 +1,15 @@
 package com.celsius.tsp.solver;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
+import com.celsius.tsp.common.CommonProblemFunctions;
 import com.celsius.tsp.proto.TspService;
 import com.celsius.tsp.solver.exceptions.HeuristicException;
 
-import lombok.NoArgsConstructor;
+import com.codahale.metrics.JmxReporter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,16 +17,26 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@NoArgsConstructor
 public class NearestNeighbourHeuristic implements TravellingSalesmanHeuristic {
+  private final MetricRegistry registry = new MetricRegistry();
+  private final Timer timer = registry.timer(MetricRegistry.name(this.getClass(), "solve"));
+  private final JmxReporter reporter = JmxReporter.forRegistry(registry).build();
+
+  public NearestNeighbourHeuristic() {
+    reporter.start();
+  }
+
   @Override
   public TspService.TravellingSalesmanSolution solve(TspService.TravellingSalesmanProblem problem)
     throws Exception {
+    final Timer.Context context = timer.time();
+
     List<TspService.Vertex> verticesToVisit = Lists.newArrayList(problem.getVerticesList());
     List<TspService.Vertex> visits = Lists.newArrayList();
     Set<TspService.Vertex> visitedVertices = Sets.newHashSet();
 
-    TspService.Vertex currentVertex = problem.getVertices(problem.getDepartureVertexId());
+    TspService.Vertex currentVertex = CommonProblemFunctions
+        .getVertexById(problem, problem.getDepartureVertexId());
     visits.add(currentVertex);
     visitedVertices.add(currentVertex);
     verticesToVisit.remove(currentVertex);
@@ -43,6 +56,7 @@ public class NearestNeighbourHeuristic implements TravellingSalesmanHeuristic {
       }
     }
 
+    context.stop();
     return TspService.TravellingSalesmanSolution.newBuilder()
       .addAllVertices(visits)
       .build();
