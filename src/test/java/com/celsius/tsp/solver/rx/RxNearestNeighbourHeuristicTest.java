@@ -80,7 +80,8 @@ public class RxNearestNeighbourHeuristicTest {
                   travellingSalesmanSolution.getVertices(l).getId());
             }
           }
+          assertEquals(size - 1, travellingSalesmanSolution.getVertices(size - 2).getId());
         });
-    assertEquals(true, true);
+
   }
 }

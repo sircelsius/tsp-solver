@@ -65,6 +65,7 @@ public class NearestNeighbourHeuristicTest {
         assertEquals( size - 1 - ( l + 1 ) / 2, solution.getVertices(l).getId());
       }
     }
+    assertEquals(size - 1, solution.getVertices(size - 2).getId());
   }
 
 }

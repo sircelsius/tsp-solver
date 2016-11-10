@@ -11,13 +11,18 @@ import com.codahale.metrics.Timer;
 import com.google.common.collect.Lists;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
 
 
 /**
  * Reactive implementation of the Nearest Neighbour Heuristic.
+ *
+ * @since 1.0.0
+ * @author marc.bramaud
  */
+@Log4j2
 public class RxNearestNeighbourHeuristic implements ReactiveTravellingSalesmanHeuristic {
   private final MetricRegistry registry = new MetricRegistry();
   private final Timer timer = registry.timer(MetricRegistry.name(this.getClass(), "solve"));
@@ -31,6 +36,7 @@ public class RxNearestNeighbourHeuristic implements ReactiveTravellingSalesmanHe
   public Single<TspService.TravellingSalesmanSolution>
       solve(TspService.TravellingSalesmanProblem problem) {
 
+    log.debug("Starting Nearest Neighbour reactive heuristic.");
     final Timer.Context context = timer.time();
 
     List<TspService.Vertex> visited = Lists.newArrayList();
@@ -40,9 +46,12 @@ public class RxNearestNeighbourHeuristic implements ReactiveTravellingSalesmanHe
         .getVertexById(problem, problem.getDepartureVertexId());
 
     return getRecursive(visited, problem, current)
-      .doOnError(Throwable::printStackTrace)
+      .doOnError(throwable -> log.error("Error while executing heuristic: ", throwable))
       .map(vertices -> {
+        // virtually add arrival vertex
+        vertices.add(CommonProblemFunctions.getVertexById(problem, problem.getArrivalVertexId()));
         context.stop();
+        log.debug("Done with Nearest Neighbour reactive heuristic.");
         return TspService.TravellingSalesmanSolution
           .newBuilder().addAllVertices(vertices).build();
       });

@@ -8,7 +8,9 @@ import com.celsius.tsp.solver.rx.ReactiveTravellingSalesmanHeuristic;
 import com.celsius.tsp.solver.rx.RxNearestNeighbourHeuristic;
 
 import io.grpc.stub.StreamObserver;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class TravellingSalesmanProblemService
     extends TravellingSalesmanProblemServiceGrpc.TravellingSalesmanProblemServiceImplBase {
 
@@ -23,16 +25,20 @@ public class TravellingSalesmanProblemService
   @Override
   public void solve(TspService.TravellingSalesmanProblem request,
                     StreamObserver<TspService.TravellingSalesmanSolution> responseObserver) {
+    log.debug("Solving problem of size: {}", request.getVerticesCount());
     try {
       double random = Math.random();
       if (random < 0.5) {
-        System.out.println("Direct.");
-        responseObserver.onNext(heuristic.solve(request));
+        log.info("Running synchronous heuristic {}.", heuristic.getClass().getSimpleName());
+        TspService.TravellingSalesmanSolution solution = heuristic.solve(request);
+        log.debug("Problem solved with solution: {}", solution.toString());
+        responseObserver.onNext(solution);
         responseObserver.onCompleted();
       } else {
-        System.out.println("Reactive.");
+        log.info("Running reactive heuristic {}.", rxheuristic.getClass().getSimpleName());
         rxheuristic.solve(request)
           .doOnSuccess(travellingSalesmanSolution -> {
+            log.debug("Problem solved with solution: {}", travellingSalesmanSolution.toString());
             responseObserver.onNext(travellingSalesmanSolution);
             responseObserver.onCompleted();
           })

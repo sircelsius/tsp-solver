@@ -10,6 +10,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +18,17 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Solves a {@link com.celsius.tsp.proto.TspService.TravellingSalesmanProblem} using the
+ * Nearest Neighbour heuristic.
+ * See https://en.wikipedia.org/wiki/Nearest_neighbour_algorithm
+ *
+ * @since 1.0.0
+ * @author marc.bramaud
+ */
+@Log4j2
 public class NearestNeighbourHeuristic implements TravellingSalesmanHeuristic {
+
   private final MetricRegistry registry = new MetricRegistry();
   private final Timer timer = registry.timer(MetricRegistry.name(this.getClass(), "solve"));
   private final JmxReporter reporter = JmxReporter.forRegistry(registry).build();
@@ -29,6 +40,8 @@ public class NearestNeighbourHeuristic implements TravellingSalesmanHeuristic {
   @Override
   public TspService.TravellingSalesmanSolution solve(TspService.TravellingSalesmanProblem problem)
     throws Exception {
+
+    log.debug("Starting Nearest Neighbour synchronous heuristic.");
     final Timer.Context context = timer.time();
 
     List<TspService.Vertex> verticesToVisit = Lists.newArrayList(problem.getVerticesList());
@@ -55,8 +68,11 @@ public class NearestNeighbourHeuristic implements TravellingSalesmanHeuristic {
         throw new HeuristicException("Unable to get next vertex");
       }
     }
+    // virtually add last vertex
+    visits.add(CommonProblemFunctions.getVertexById(problem, problem.getArrivalVertexId()));
 
     context.stop();
+    log.debug("Done with Nearest Neighbour synchronous heuristic.");
     return TspService.TravellingSalesmanSolution.newBuilder()
       .addAllVertices(visits)
       .build();
