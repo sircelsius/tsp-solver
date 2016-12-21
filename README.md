@@ -33,3 +33,4 @@ As well as to show (non optimal) implementations of different heuristics used to
 
   1. [`tsp-proto`](https://github.com/sircelsius/tsp-proto): the protobuf definition for the model and service.
   1. [`tsp-client`](https://github.com/sircelsius/tsp-client): a microscopic client that calls this server with a random problem.
+  1. [`tsp-frontend`](https://github.com/sircelsius/tsp-frontend): a nanoscopic visualization of the results.
