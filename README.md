@@ -28,3 +28,8 @@ The idea behind this project is to try the following libraries:
   * [`rxjava2`](https://github.com/ReactiveX/RxJava/wiki/What's-different-in-2.0).
 
 As well as to show (non optimal) implementations of different heuristics used to solve the [Travelling Salesman Problem](https://en.wikipedia.org/wiki/Travelling_salesman_problem).
+
+## See also
+
+  1. [`tsp-proto`](https://github.com/sircelsius/tsp-proto): the protobuf definition for the model and service.
+  1. [`tsp-client`](https://github.com/sircelsius/tsp-client): a microscopic client that calls this server with a random problem.
