@@ -2,6 +2,7 @@ package com.celsius.tsp.solver;
 
 
 import com.celsius.tsp.common.CommonProblemFunctions;
+import com.celsius.tsp.common.CommonSolutionFunctions;
 import com.celsius.tsp.proto.TspService;
 import com.celsius.tsp.solver.exceptions.HeuristicException;
 
@@ -75,6 +76,9 @@ public class NearestNeighbourHeuristic implements TravellingSalesmanHeuristic {
     log.debug("Done with Nearest Neighbour synchronous heuristic.");
     return TspService.TravellingSalesmanSolution.newBuilder()
       .addAllVertices(visits)
+      .setCost(
+        CommonSolutionFunctions.calculateWeightFromEdgesAndSolution(problem.getEdgesList(), visits)
+      )
       .build();
 
   }

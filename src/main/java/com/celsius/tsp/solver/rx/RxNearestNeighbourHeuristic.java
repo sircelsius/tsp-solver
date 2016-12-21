@@ -3,6 +3,7 @@ package com.celsius.tsp.solver.rx;
 import static io.reactivex.Single.just;
 
 import com.celsius.tsp.common.CommonProblemFunctions;
+import com.celsius.tsp.common.CommonSolutionFunctions;
 import com.celsius.tsp.proto.TspService;
 
 import com.codahale.metrics.JmxReporter;
@@ -53,14 +54,21 @@ public class RxNearestNeighbourHeuristic implements ReactiveTravellingSalesmanHe
         context.stop();
         log.debug("Done with Nearest Neighbour reactive heuristic.");
         return TspService.TravellingSalesmanSolution
-          .newBuilder().addAllVertices(vertices).build();
+          .newBuilder()
+          .addAllVertices(vertices)
+          .setCost(
+            CommonSolutionFunctions.calculateWeightFromEdgesAndSolution(
+              problem.getEdgesList(),
+              vertices)
+          )
+          .build();
       });
   }
 
   private Single<List<TspService.Vertex>> getRecursive(List<TspService.Vertex> visited,
                                                        TspService.TravellingSalesmanProblem problem,
                                                        TspService.Vertex current) {
-    if (visited.size() == problem.getVerticesCount() - 1) {
+    if (visited.size() >= problem.getVerticesCount() - 1) {
       return just(visited);
     }
     return getNearestNotVisitedNeighbour(problem, current, visited)

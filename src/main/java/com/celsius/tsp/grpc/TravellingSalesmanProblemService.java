@@ -6,6 +6,7 @@ import com.celsius.tsp.solver.NearestNeighbourHeuristic;
 import com.celsius.tsp.solver.TravellingSalesmanHeuristic;
 import com.celsius.tsp.solver.rx.ReactiveTravellingSalesmanHeuristic;
 import com.celsius.tsp.solver.rx.RxNearestNeighbourHeuristic;
+import com.celsius.tsp.solver.rx.sa.RxSimulatedAnnealingHeuristic;
 
 import io.grpc.stub.StreamObserver;
 import lombok.extern.log4j.Log4j2;
@@ -19,7 +20,7 @@ public class TravellingSalesmanProblemService
 
   public TravellingSalesmanProblemService() {
     heuristic = new NearestNeighbourHeuristic();
-    rxheuristic = new RxNearestNeighbourHeuristic();
+    rxheuristic = new RxSimulatedAnnealingHeuristic(new RxNearestNeighbourHeuristic());
   }
 
   @Override
@@ -31,14 +32,14 @@ public class TravellingSalesmanProblemService
       if (random < 0.5) {
         log.info("Running synchronous heuristic {}.", heuristic.getClass().getSimpleName());
         TspService.TravellingSalesmanSolution solution = heuristic.solve(request);
-        log.debug("Problem solved with solution: {}", solution.toString());
+        log.debug("Problem solved with cost: {}", solution.getCost());
         responseObserver.onNext(solution);
         responseObserver.onCompleted();
       } else {
         log.info("Running reactive heuristic {}.", rxheuristic.getClass().getSimpleName());
         rxheuristic.solve(request)
           .doOnSuccess(travellingSalesmanSolution -> {
-            log.debug("Problem solved with solution: {}", travellingSalesmanSolution.toString());
+            log.debug("Problem solved with cost: {}", travellingSalesmanSolution.getCost());
             responseObserver.onNext(travellingSalesmanSolution);
             responseObserver.onCompleted();
           })
